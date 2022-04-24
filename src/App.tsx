@@ -1,25 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { Header } from "./components/Header";
+import { Main } from "./components/Main";
+import { Route, Routes } from "react-router-dom";
+import { HomePage } from "./pages/HomePage";
+import { Details } from "./pages/Details";
+import { NotFound } from "./pages/NotFound";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { ALL_COUNTRIES } from "./config";
+
+export interface IData {
+  name: string;
+  capital: string;
+  flags: {
+    png: string;
+    svg: string;
+  };
+  independent: boolean;
+  population: number;
+  region: string;
+}
 
 function App() {
+  const [countries, setCountries] = useState<IData[]>([]);
+
+  useEffect(() => {
+    axios.get<IData[]>(ALL_COUNTRIES).then(({ data }) => setCountries(data));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header />
+      <Main>
+        <Routes>
+          <Route path="/" element={<HomePage countries={countries} />} />
+          <Route path="/country/:name" element={<Details />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Main>
+    </>
   );
 }
 
