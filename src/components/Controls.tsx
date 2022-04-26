@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import styled from "styled-components";
 import { CustomSelect } from "./CustomSelect";
 import { Search } from "./Search";
@@ -39,23 +38,27 @@ const Wrapper = styled.div`
   }
 `;
 
+interface IOption {
+  value: string;
+  label: string;
+}
 interface IProps {
   onSearch: (search: string, region: string) => void;
 }
 
 export const Controls = ({ onSearch }: IProps) => {
   const [search, setSearch] = useState("");
-  const [region, setRegion] = useState<unknown>("");
+  const [region, setRegion] = useState<IOption | null>(null);
 
   useEffect(() => {
-    const regionValue = (region as { value: string })?.value || "";
+    const regionValue = region?.value || "";
     onSearch(search, regionValue);
   }, [search, region]);
 
   return (
     <Wrapper>
       <Search search={search} setSearch={setSearch} />
-      <CustomSelect
+      <CustomSelect<IOption>
         options={options}
         placeholder="Filter by region"
         isClearable
